@@ -43,7 +43,7 @@ Este proyecto es una aplicación full-stack que permite realizar operaciones CRU
 
 1. Clona el repositorio:
    ```bash
-   git clone https://github.com/tu-usuario/NodeReact.git
+   git clone https://github.com/mathirodao/NodeReact.git
    cd backend
    ```
 
@@ -55,10 +55,7 @@ Este proyecto es una aplicación full-stack que permite realizar operaciones CRU
 3. Configura las variables de entorno:
    - Crea un archivo `.env` en la raíz del directorio `backend` con el siguiente contenido:
      ```env
-     MONGO_URI=mongodb+srv://vainarod19:Soyo1997.rod@cluster0.owfx9gf.mongodb.net/mydatabase
-     SESSION_SECRET=d53b88943d45710ee66b99b6f1cf9913a7c0b275ef84dbdd873e7df21f138b5d
-     PORT=5000
-     NODE_ENV=development
+   
      ```
 
 4. Inicia el servidor:
