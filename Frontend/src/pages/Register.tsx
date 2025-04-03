@@ -13,7 +13,6 @@ const Register: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Función para validar el username
   const validateUsername = (username: string): string | null => {
     const regex = /^[a-zA-Z0-9]+$/; 
     if (!regex.test(username)) {
@@ -39,7 +38,6 @@ const Register: React.FC = () => {
       return;
     }
 
-    // Validar el username
     const usernameError = validateUsername(username);
     if (usernameError) {
       setError(usernameError);

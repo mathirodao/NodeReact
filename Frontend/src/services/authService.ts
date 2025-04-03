@@ -3,9 +3,7 @@ import api from './api';
 // Login
 export const login = async (identifier: string, password: string) => {
     try {
-      console.log("Enviando solicitud de login...");
       const response = await api.post('/api/auth/login', { identifier, password });
-      console.log("Respuesta del backend:", response.data);
       return response.data;
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
@@ -28,10 +26,19 @@ export const logout = async () => {
 export const verifySession = async () => {
   try {
     const response = await api.get('/api/auth/verify-session');
-    console.log('response verify',response)
     return response.data;
   } catch (error) {
     console.error('Error al verificar la sesión:', error);
     throw error;
   }
 };
+
+export const getFailedLoginStats = async () => {
+    try {
+      const response = await api.get('/api/auth/failed-logins');
+      return response.data;
+    } catch (error) {
+      console.error('Error in getFailedLoginStats:', error);
+      throw error;
+    }
+  };

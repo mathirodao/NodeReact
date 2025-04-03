@@ -40,7 +40,6 @@ class AuthService {
   }
 
   validatePassword(password) {
-    console.log('en validatePassword JE', password)
     const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!regex.test(password)) {
       return "La contraseña debe tener al menos 8 caracteres, una letra mayúscula, un número, un signo y no puede contener espacios.";

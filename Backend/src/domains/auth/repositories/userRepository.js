@@ -8,7 +8,6 @@ class UserRepository {
   }
 
   async createUser(userData) {
-    console.log('en create user de Repository', userData);
     try {
       return await this.UserModel.create(userData); 
     } catch (error) {
@@ -26,12 +25,10 @@ class UserRepository {
   }
 
   async generateUniqueEmail(firstName, lastName) {
-    console.log('generateUniqueEmail');
     let baseEmail = `${firstName.toLowerCase()}${lastName.toLowerCase()}@mail.com`;
     let uniqueEmail = baseEmail;
     let counter = 1;
 
-    console.log('generateUniqueEmail', baseEmail);
 
     while (true) {
       const existingUser = await this.UserModel.findOne({ email: uniqueEmail });
@@ -60,11 +57,9 @@ class UserRepository {
   }
 
   async findUserByActiveSession(userId) {
-    console.log('findUserByActiveSession userId', userId);
     try {
       const objectId = ObjectId.isValid(userId) ? new ObjectId(userId) : null;
 
-      console.log('objectId', objectId);
 
       if (!objectId) {
         console.error("ID de usuario no válido:", userId);
@@ -91,7 +86,6 @@ class UserRepository {
   }
 
   async findUserById(id) {
-    console.log('id', id);
     const objectId = ObjectId.isValid(id) ? id : null;
     if (!objectId) throw new Error("ID de usuario no válido");
 

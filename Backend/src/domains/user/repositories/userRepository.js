@@ -1,33 +1,40 @@
 
-const User = require('../entities/User');
 const { ObjectId } = require('mongodb');
 
 class UserRepository {
+  constructor(UserModel) {
+    this.User = UserModel;
+  }
+
   async findUser(query) {
-    return await User.findOne(query);
+    return await this.User.findOne(query);
   }
 
   async findAllUsers() {
-    return await User.find({});
+    try {
+      const users = await this.User.find({}).lean();
+      return users;
+    } catch (error) {
+      console.error("Error al obtener todos los usuarios:", error);
+      throw error;
+    }
   }
 
   async findUserById(id) {
-    console.log('findUserById de userRepository', id);
     const objectId = ObjectId.isValid(id) ? new ObjectId(id) : null;
-    console.log('objectId', objectId);
     if (!objectId) {
       throw new Error("ID de usuario no válido");
     }
-    return await User.findById(objectId); 
+    return await this.User.findById(objectId); 
   }
 
 
   async updateUser(filter, update) {
-    return await User.updateOne(filter, update);
+    return await this.User.updateOne(filter, update);
   }
 
   async addSession(userId, sessionId) {
-    return await User.findByIdAndUpdate(
+    return await this.User.findByIdAndUpdate(
       userId,
       {
         $push: {
@@ -42,14 +49,14 @@ class UserRepository {
   }
 
   async updateSessionLogoutTime(sessionId) {
-    return await User.updateOne(
+    return await this.User.updateOne(
       { 'person.sessions.sessionId': sessionId },
       { $set: { 'person.sessions.$.logoutTime': new Date() } }
     );
   }
 
   async findUserByActiveSession(sessionId) {
-    return await User.findOne({
+    return await this.User.findOne({
       'person.sessions.sessionId': sessionId,
       'person.sessions.logoutTime': { $exists: false },
     });
@@ -70,7 +77,7 @@ class UserRepository {
         },
       }));
 
-      return await User.insertMany(users);
+      return await this.User.insertMany(users);
     } catch (error) {
       throw new Error("Error al cargar usuarios desde Excel");
     }
@@ -83,15 +90,15 @@ class UserRepository {
     if (filters.role) query.role = filters.role;
     if (filters.status) query.status = filters.status;
 
-    return await User.find(query);
+    return await this.User.find(query);
   }
 
   async findUserBySessionId(sessionId) {
-    return await User.findOne({
+    return await this.User.findOne({
       'person.sessions.sessionId': sessionId,
       'person.sessions.logoutTime': { $exists: false },
     });
   }
 }
 
-module.exports = new UserRepository();
+module.exports = UserRepository;

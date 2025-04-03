@@ -1,20 +1,4 @@
-
 const mongoose = require('mongoose');
-
-class User {
-  constructor(data) {
-    this.username = data.username;
-    this.email = data.email;
-    this.password = data.password; 
-    this.role = data.role || 'user';
-    this.failedAttempts = data.failedAttempts || 0;
-    this.status = data.status || { blocked: false };
-    this.person = {
-      name: data.name,
-      sessions: data.sessions || [],
-    };
-  }
-}
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -35,6 +19,4 @@ const userSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Exportar directamente el modelo de Mongoose
-const UserModel = mongoose.model('User', userSchema);
-module.exports = UserModel;
+module.exports = userSchema;

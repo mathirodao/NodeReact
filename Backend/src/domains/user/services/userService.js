@@ -1,13 +1,23 @@
-const userRepository = require('../repositories/userRepository');
+// const userRepository = require('../repositories/userRepository');
 const bcrypt = require('bcryptjs');
 
 class UserService {
+  constructor(userRepository) {
+    this.userRepository = userRepository;
+  }
+  
   async getAllUsers() {
-    return await userRepository.findAllUsers();
+    try {
+      const users = await this.userRepository.findAllUsers();
+      return users;
+    } catch (error) {
+      console.error("Error en el servicio al obtener todos los usuarios:", error);
+      throw error;
+    }
   }
 
   async getUserById(id) {
-    return await userRepository.findUserById(id);
+    return await this.userRepository.findUserById(id);
   }
 
   async updateUser(id, data) {
@@ -15,16 +25,16 @@ class UserService {
       data.password = await bcrypt.hash(data.password, 10); 
     }
 
-    return await userRepository.updateUser({ _id: id }, data);
+    return await this.userRepository.updateUser({ _id: id }, data);
   }
 
   async uploadUsersFromExcel(usersData) {
-    return await userRepository.uploadUsersFromExcel(usersData);
+    return await this.userRepository.uploadUsersFromExcel(usersData);
   }
 
   async filterUsers(filters) {
-    return await userRepository.filterUsers(filters);
+    return await this.userRepository.filterUsers(filters);
   }
 }
 
-module.exports = new UserService();
+module.exports = UserService;

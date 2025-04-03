@@ -1,31 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/Dashboard";
 import UserMaintenance from "./components/UserMaintenance";
+import Register from "./pages/Register";
 import { verifySession } from "./services/authService";
 import { getCurrentUser } from "./services/userService";
+import ErrorBoundary from "./components/ErrorBoundary";
+
+interface User {
+  _id: string;
+  role: string;
+  person: {
+    name: string;
+  };
+}
 
 const App: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchSession = async () => {
       try {
-        // Verificar si hay una sesión activa
         await verifySession();
-
-        // Obtener los datos del usuario loggeado
         const currentUser = await getCurrentUser();
         setUser(currentUser);
       } catch (error) {
-        console.error("Error al verificar la sesión o cargar el usuario:", error);
-        setUser(null); // No hay sesión activa
+        setUser(null);
       } finally {
-        setIsLoading(false); // Finalizar carga
+        setIsLoading(false);
       }
     };
 
@@ -33,22 +44,59 @@ const App: React.FC = () => {
   }, []);
 
   if (isLoading) {
-    return <div>Cargando...</div>;
+    return (
+      <div className="d-flex justify-content-center mt-5">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+    );
   }
 
   return (
     <Router>
       {user && <Navbar user={user} />}
       <Routes>
-        {!user && <Route path="*" element={<Navigate to="/" />} />}
+        {/* Rutas públicas */}
+        <Route
+          path="/"
+          element={!user ? <Home /> : <Navigate to="/welcome" />}
+        />
+        <Route
+          path="/register"
+          element={!user ? <Register /> : <Navigate to="/welcome" />}
+        />
 
         {/* Rutas protegidas */}
-        <Route path="/welcome" element={<Welcome user={user} />} />
-        <Route path="/dashboard" element={<Dashboard users={[]} />} />
-        <Route path="/maintenance" element={<UserMaintenance isAdmin={user?.role === "admin"} />} />
+        <Route
+          path="/welcome"
+          element={user ? <Welcome /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/dashboard"
+          element={
+            user?.role === "admin" ? (
+              <ErrorBoundary>
+                <Dashboard user={user} />
+              </ErrorBoundary>
+            ) : (
+              <Navigate to="/welcome" />
+            )
+          }
+        />
+        <Route
+          path="/maintenance"
+          element={
+            user?.role === "admin" ? (
+              <UserMaintenance />
+            ) : (
+              <Navigate to={user ? "/welcome" : "/"} />
+            )
+          }
+        />
 
-        {/* Ruta de inicio de sesión */}
-        <Route path="/" element={<Home />} />
+        {/* Redirección para rutas no encontradas */}
+        <Route path="*" element={<Navigate to={user ? "/welcome" : "/"} />} />
       </Routes>
     </Router>
   );
